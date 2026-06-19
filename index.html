@@ -647,8 +647,13 @@
         renderizarApostas();
     }
 
-    function apostaExistentePorNome(nome) {
-        return apostas.some(ap => ap.nome.trim().toLowerCase() === nome.trim().toLowerCase());
+    // Verifica se já existe um palpite IDENTICO (Mesmo nome, mesmo placar para o Brasil e mesmo placar para o Haiti)
+    function palpiteIdenticoExistente(nome, gb, gh) {
+        return apostas.some(ap => 
+            ap.nome.trim().toLowerCase() === nome.trim().toLowerCase() && 
+            ap.golsBrasil === gb && 
+            ap.golsHaiti === gh
+        );
     }
 
     function adicionarAposta(event) {
@@ -658,15 +663,16 @@
             alert("Informe o nome do apostador.");
             return;
         }
-        if (apostaExistentePorNome(nome)) {
-            alert(`❌ O apostador "${nome}" já possui uma aposta registrada! Use outro nome ou remova a aposta anterior.`);
-            return;
-        }
 
         const golsBrasil = parseInt(golsBrasilInput.value);
         const golsHaiti = parseInt(golsHaitiInput.value);
         if (isNaN(golsBrasil) || isNaN(golsHaiti) || golsBrasil < 0 || golsHaiti < 0) {
             alert("Gols devem ser números não negativos.");
+            return;
+        }
+
+        if (palpiteIdenticoExistente(nome, golsBrasil, golsHaiti)) {
+            alert(`❌ O apostador "${nome}" já possui exatamente este palpite (${golsBrasil} x ${golsHaiti}) cadastrado!`);
             return;
         }
 
@@ -684,7 +690,7 @@
         golsBrasilInput.value = '0';
         golsHaitiInput.value = '0';
         nomeInput.focus();
-        mostrarToast(`✅ Aposta de ${nome} registrada!`, '#2c5f2e');
+        mostrarToast(`✅ Palpite de ${nome} registrado!`, '#2c5f2e');
     }
 
     function resetAllApostas() {
@@ -781,30 +787,27 @@
 
             let importadas = 0;
             let ignoradas = 0;
-            let duplicadas = [];
             let idAtual = nextId;
 
             for (let i = 0; i < linhas.length; i++) {
-                let linha = linhas[i].trim();
+                let linha = lines = linhas[i].trim();
                 if (linha === "") continue;
                 linha = linha.replace(/\r$/, '');
                 
-                // Suporta separação por vírgula ou ponto-e-vírgula
                 let colunas = [];
                 if (linha.includes(';')) {
-                    colunas = linha.split(';').map(c => c.trim());
+                    colunas = linha.split(';');
                 } else {
-                    colunas = linha.split(',').map(c => c.trim());
+                    colunas = linha.split(',');
                 }
                 
                 if (colunas.length < 3) continue;
                 
-                let nome = colunas[0];
+                let nome = colunas[0].trim();
                 if (nome.startsWith('"') && nome.endsWith('"')) {
                     nome = nome.slice(1, -1).replace(/""/g, '"');
                 }
                 
-                // Se for a linha de cabeçalho com texto puro (ex: "nome", "gols do brasil"), pula automaticamente
                 if (i === 0 && isNaN(parseInt(colunas[1]))) {
                     continue; 
                 }
@@ -817,8 +820,8 @@
                     continue;
                 }
                 
-                if (apostaExistentePorNome(nome)) {
-                    duplicadas.push(nome);
+                // Só bloqueia se for o mesmo nome E mesmo placar
+                if (palpiteIdenticoExistente(nome, golsBrasil, golsHaiti)) {
                     ignoradas++;
                     continue;
                 }
@@ -837,8 +840,8 @@
                 nextId = idAtual;
                 atualizarResumo();
                 renderizarApostas();
-                let msg = `✅ ${importadas} apostas importadas com sucesso!`;
-                if (ignoradas > 0) msg += ` ⚠️ ${ignoradas} ignoradas (linhas inválidas ou nomes duplicados).`;
+                let msg = `✅ ${importadas} palpites importados com sucesso!`;
+                if (ignoradas > 0) msg += ` ⚠️ ${ignoradas} ignorados (linhas inválidas ou palpites idênticos).`;
                 mostrarToast(msg, '#2c5f8a');
             } else {
                 alert("Nenhuma aposta válida importada. Verifique se o arquivo salvo está no formato CSV (Separado por vírgulas ou ponto-e-vírgula).");
