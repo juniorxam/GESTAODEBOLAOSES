@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Bolão Copa do Mundo 2026 | Brasil x Haiti | R$10 + Taxa 10% | Backup CSV</title>
+    <title>Bolão Copa do Mundo 2026 | Brasil x Haiti | R$10 | Backup CSV</title>
     <style>
         * {
             margin: 0;
@@ -148,17 +148,6 @@
             font-size: 1.2rem;
             color: #1e3a2f;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        .tax-badge {
-            margin-top: 0.8rem;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            display: inline-block;
-            padding: 0.3rem 1.2rem;
-            border-radius: 40px;
-            font-size: 0.9rem;
-            font-weight: 500;
         }
 
         .dashboard {
@@ -503,7 +492,6 @@
             </div>
         </div>
         <div class="bet-value">💵 VALOR POR APOSTA: R$ 10,00 💵</div>
-        <div class="tax-badge">🎯 Taxa de administração: 10% sobre o total arrecadado</div>
         <div class="worldcup-gallery">
             <img class="worldcup-img" src="https://cdn.pixabay.com/photo/2018/06/11/17/07/football-3469591_1280.jpg" alt="Estádio Copa" onerror="this.style.display='none'">
             <img class="worldcup-img" src="https://cdn.pixabay.com/photo/2014/04/05/11/32/trophy-315677_1280.jpg" alt="Taça" onerror="this.style.display='none'">
@@ -541,12 +529,10 @@
             <div class="resumo">
                 <strong>📊 Resumo do bolão:</strong><br>
                 Total de apostas: <span id="totalApostasCount">0</span><br>
-                Arrecadação bruta: R$ <span id="totalArrecadadoBruto">0,00</span><br>
-                <span style="color:#b45f1b;">💰 Taxa Admin (10%): R$ <span id="totalTaxa">0,00</span></span><br>
-                <strong>🏆 Prêmio líquido total: R$ <span id="totalPremioLiquido">0,00</span></strong>
+                <strong>🏆 Prêmio acumulado total: R$ <span id="totalPremioLiquido">0,00</span></strong>
             </div>
             <div class="tax-info">
-                ℹ️ A taxa de 10% é destinada à organização do bolão. O prêmio é dividido entre os acertadores do placar exato.
+                ℹ️ 100% do valor arrecadado é destinado ao prêmio e dividido igualmente entre os acertadores do placar exato.
             </div>
         </div>
 
@@ -568,25 +554,22 @@
                 <div id="premiacaoOutput" class="premio-box">
                     Aguardando resultado oficial...
                 </div>
-                <div style="font-size: 0.7rem; margin-top: 0.5rem;">✔️ Somente placar exato ganha. O prêmio líquido (após 10% de taxa) é dividido igualmente entre os vencedores.</div>
+                <div style="font-size: 0.7rem; margin-top: 0.5rem;">✔️ Somente placar exato ganha. O prêmio é dividido igualmente entre os vencedores.</div>
             </div>
         </div>
     </div>
     <footer>
-        🏆 Bolão Copa do Mundo 2026 - Brasil x Haiti | Aposta R$10 | Taxa Adm: 10% | Backup CSV disponível
+        🏆 Bolão Copa do Mundo 2026 - Brasil x Haiti | Aposta R$10 | Backup CSV disponível
     </footer>
 </div>
 
 <script>
     let apostas = [];
     let nextId = 1;
-    const TAXA_ADMIN = 0.10;
 
     // Elementos
     const apostasContainer = document.getElementById('apostasContainer');
     const totalApostasSpan = document.getElementById('totalApostasCount');
-    const totalArrecadadoBrutoSpan = document.getElementById('totalArrecadadoBruto');
-    const totalTaxaSpan = document.getElementById('totalTaxa');
     const totalPremioLiquidoSpan = document.getElementById('totalPremioLiquido');
     const form = document.getElementById('apostaForm');
     const nomeInput = document.getElementById('apostadorNome');
@@ -603,12 +586,8 @@
 
     function calcularFinanceiro() {
         const totalBruto = apostas.length * 10;
-        const taxa = totalBruto * TAXA_ADMIN;
-        const premioLiquido = totalBruto - taxa;
-        totalArrecadadoBrutoSpan.innerText = totalBruto.toFixed(2).replace('.', ',');
-        totalTaxaSpan.innerText = taxa.toFixed(2).replace('.', ',');
-        totalPremioLiquidoSpan.innerText = premioLiquido.toFixed(2).replace('.', ',');
-        return { totalBruto, taxa, premioLiquido };
+        totalPremioLiquidoSpan.innerText = totalBruto.toFixed(2).replace('.', ',');
+        return { totalBruto, premioLiquido: totalBruto };
     }
 
     function mostrarToast(mensagem, cor = '#2c3e2f') {
@@ -621,6 +600,7 @@
     }
 
     function atualizarResumo() {
+        totalApostasSpan.innerText = apostas.length;
         calcularFinanceiro();
         salvarLocalStorage();
     }
@@ -732,15 +712,13 @@
             return;
         }
         const ganhadores = apostas.filter(ap => ap.golsBrasil === brasilResult && ap.golsHaiti === haitiResult);
-        const { totalBruto, taxa, premioLiquido } = calcularFinanceiro();
+        const { premioLiquido } = calcularFinanceiro();
         
         if (ganhadores.length === 0) {
             premiacaoOutput.innerHTML = `
                 🥲 NENHUM GANHADOR para o placar ${brasilResult} x ${haitiResult}.<br>
-                📦 Arrecadação bruta: R$ ${totalBruto.toFixed(2).replace('.', ',')}<br>
-                🧾 Taxa Admin (10%): R$ ${taxa.toFixed(2).replace('.', ',')}<br>
-                💰 Prêmio líquido disponível: R$ ${premioLiquido.toFixed(2).replace('.', ',')}<br>
-                ⚠️ Ninguém acertou o placar exato. O valor fica retido (simulação).
+                💰 Prêmio acumulado total: R$ ${premioLiquido.toFixed(2).replace('.', ',')}<br>
+                ⚠️ Ninguém acertou o placar exato. O valor fica retido para a próxima rodada.
             `;
             return;
         }
@@ -752,30 +730,22 @@
         premiacaoOutput.innerHTML = `
             🎉 RESULTADO OFICIAL: BRASIL ${brasilResult} x ${haitiResult} HAITI 🎉<br>
             <hr style="margin:6px 0; border-color:#e6b422;">
-            📊 Arrecadação bruta: R$ ${totalBruto.toFixed(2).replace('.', ',')}<br>
-            🧾 Taxa de administração (10%): R$ ${taxa.toFixed(2).replace('.', ',')}<br>
-            🏆 <strong>PRÊMIO LÍQUIDO TOTAL: R$ ${premioLiquido.toFixed(2).replace('.', ',')}</strong><br>
+            🏆 <strong>PRÊMIO TOTAL DISTRIBUÍDO: R$ ${premioLiquido.toFixed(2).replace('.', ',')}</strong><br>
             <hr style="margin:6px 0; border-color:#e6b422;">
             <strong>✅ APOSTAS VENCEDORAS (${ganhadores.length} acertador(es)):</strong><br>
             ${listaHtml}
             <hr style="margin:6px 0; border-color:#e6b422;">
-            💰 <strong>Prêmio individual (após taxa): R$ ${premioPorGanhador.toFixed(2).replace('.', ',')} cada</strong> 💰
+            💰 <strong>Prêmio individual: R$ ${premioPorGanhador.toFixed(2).replace('.', ',')} cada</strong> 💰
         `;
     }
 
-    // ========== FUNÇÃO DE BACKUP ==========
     function exportarBackup() {
         if (apostas.length === 0) {
             alert("Não há apostas para exportar. Adicione algumas apostas primeiro.");
             return;
         }
-        
-        // Cabeçalho do CSV
         let csvContent = "nome,gols_brasil,gols_haiti\n";
-        
-        // Adiciona cada aposta como linha
         apostas.forEach(ap => {
-            // Escapar nomes que contenham vírgula ou aspas
             let nomeEscapado = ap.nome;
             if (nomeEscapado.includes(',') || nomeEscapado.includes('"')) {
                 nomeEscapado = `"${nomeEscapado.replace(/"/g, '""')}"`;
@@ -783,13 +753,11 @@
             csvContent += `${nomeEscapado},${ap.golsBrasil},${ap.golsHaiti}\n`;
         });
         
-        // Criar blob e fazer download
         const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.href = url;
         
-        // Nome do arquivo com data/hora
         const data = new Date();
         const timestamp = `${data.getFullYear()}-${(data.getMonth()+1).toString().padStart(2,'0')}-${data.getDate().toString().padStart(2,'0')}_${data.getHours().toString().padStart(2,'0')}h${data.getMinutes().toString().padStart(2,'0')}`;
         link.setAttribute("download", `bolaobrasil_haiti_backup_${timestamp}.csv`);
@@ -801,7 +769,6 @@
         mostrarToast(`💾 Backup gerado com ${apostas.length} aposta(s)!`, '#2c5f8a');
     }
 
-    // Importar CSV (mantendo a lógica anterior)
     function importarCSV(file) {
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -811,7 +778,6 @@
                 alert("Arquivo vazio.");
                 return;
             }
-            // Remove BOM se existir
             let primeiraLinha = linhas[0];
             if (primeiraLinha.charCodeAt(0) === 0xFEFF) {
                 primeiraLinha = primeiraLinha.substring(1);
@@ -830,13 +796,11 @@
             for (let i = 1; i < linhas.length; i++) {
                 let linha = linhas[i].trim();
                 if (linha === "") continue;
-                // Remove carriage return
                 linha = linha.replace(/\r$/, '');
                 const colunas = linha.split(',').map(c => c.trim());
                 if (colunas.length < 3) continue;
                 
                 let nome = colunas[0];
-                // Remove aspas se existirem
                 if (nome.startsWith('"') && nome.endsWith('"')) {
                     nome = nome.slice(1, -1).replace(/""/g, '"');
                 }
@@ -870,10 +834,9 @@
                 renderizarApostas();
                 let msg = `✅ ${importadas} apostas importadas com sucesso!`;
                 if (ignoradas > 0) msg += ` ⚠️ ${ignoradas} ignoradas (inválidas ou duplicadas).`;
-                if (duplicadas.length > 0) msg += `\nDuplicados: ${duplicadas.slice(0,5).join(', ')}${duplicadas.length>5?'...':''}`;
                 mostrarToast(msg, '#2c5f8a');
             } else {
-                alert(`Nenhuma aposta válida importada. Verifique o formato CSV e nomes duplicados.\nDuplicados: ${duplicadas.length}`);
+                alert(`Nenhuma aposta válida importada. Verifique o formato CSV.\nDuplicados: ${duplicadas.length}`);
             }
         };
         reader.onerror = () => alert("Erro ao ler o arquivo.");
