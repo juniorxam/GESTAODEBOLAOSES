@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Bolão Copa do Mundo 2026 | Brasil x Haiti | R$10 | Backup CSV</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -262,6 +263,15 @@
             background: #543a2c;
         }
 
+        .btn-pdf {
+            background: #a93226;
+            color: white;
+        }
+
+        .btn-pdf:hover {
+            background: #7b1f16;
+        }
+
         .button-group {
             display: flex;
             gap: 1rem;
@@ -445,6 +455,55 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
+        /* Estilos específicos para o PDF impresso e limpo */
+        #pdfContentTemplate {
+            display: none;
+            padding: 30px;
+            background: white;
+            color: #333;
+        }
+        .pdf-title {
+            text-align: center;
+            color: #0a2f1f;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .pdf-subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        .pdf-table th {
+            background-color: #0a2f1f;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-size: 14px;
+        }
+        .pdf-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+        }
+        .pdf-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .pdf-summary {
+            background-color: #f1e7d3;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #1e3a2f;
+            border: 1px solid #d4af37;
+        }
+
         @keyframes fadeOut {
             0% { opacity: 1; transform: translateY(0); }
             70% { opacity: 1; }
@@ -492,12 +551,6 @@
             </div>
         </div>
         <div class="bet-value">💵 VALOR POR APOSTA: R$ 10,00 💵</div>
-        <div class="worldcup-gallery">
-            <img class="worldcup-img" src="https://cdn.pixabay.com/photo/2018/06/11/17/07/football-3469591_1280.jpg" alt="Estádio Copa" onerror="this.style.display='none'">
-            <img class="worldcup-img" src="https://cdn.pixabay.com/photo/2014/04/05/11/32/trophy-315677_1280.jpg" alt="Taça" onerror="this.style.display='none'">
-            <img class="worldcup-img" src="https://cdn.pixabay.com/photo/2014/10/14/20/11/football-488714_1280.jpg" alt="Bola Oficial" onerror="this.style.display='none'">
-            <img class="worldcup-img" src="https://cdn.pixabay.com/photo/2018/04/05/19/54/world-cup-3293927_1280.png" alt="Mascote" onerror="this.style.display='none'">
-        </div>
     </div>
 
     <div class="dashboard">
@@ -521,9 +574,10 @@
                 <button type="submit" id="btnRegistrar">✅ REGISTRAR APOSTA (R$10)</button>
             </form>
             <div class="button-group">
-                <button id="resetAllBtn" class="btn-reset">🗑️ LIMPAR TUDO</button>
+                <button id="resetAllBtn" class="btn-reset">🗑️ LIMPAR</button>
                 <button id="importarBtn" class="btn-import">📂 IMPORTAR CSV</button>
-                <button id="backupBtn" class="btn-backup">💾 BACKUP (CSV)</button>
+                <button id="backupBtn" class="btn-backup">💾 BACKUP</button>
+                <button id="pdfBtn" class="btn-pdf">📄 GERAR PDF</button>
             </div>
             <input type="file" id="fileInput" accept=".csv,.txt" style="display:none">
             <div class="resumo">
@@ -554,20 +608,40 @@
                 <div id="premiacaoOutput" class="premio-box">
                     Aguardando resultado oficial...
                 </div>
-                <div style="font-size: 0.7rem; margin-top: 0.5rem;">✔️ Somente placar exato ganha. O prêmio é dividido igualmente entre os vencedores.</div>
             </div>
         </div>
     </div>
     <footer>
-        🏆 Bolão Copa do Mundo 2026 - Brasil x Haiti | Aposta R$10 | Backup CSV disponível
+        🏆 Bolão Copa do Mundo 2026 - Brasil x Haiti | Aposta R$10
     </footer>
+</div>
+
+<div id="pdfContentTemplate">
+    <div class="pdf-title">RELATÓRIO OFICIAL DO BOLÃO</div>
+    <div class="pdf-subtitle">Copa do Mundo 2026 | Brasil x Haiti — Valor por Palpite: R$ 10,00</div>
+    <table class="pdf-table">
+        <thead>
+            <tr>
+                <th>Nº</th>
+                <th>Apostador</th>
+                <th>Palpite Exato</th>
+                <th>Valor Pago</th>
+            </tr>
+        </thead>
+        <tbody id="pdfTableBody">
+            </tbody>
+    </table>
+    <div class="pdf-summary">
+        <strong>Resumo Financeiro Consolidado:</strong><br>
+        • Total de Palpites Registrados: <span id="pdfTotalApostas">0</span><br>
+        • Fundo Total de Premiação Acumulado: <strong>R$ <span id="pdfTotalPremio">0,00</span></strong>
+    </div>
 </div>
 
 <script>
     let apostas = [];
     let nextId = 1;
 
-    // Elementos
     const apostasContainer = document.getElementById('apostasContainer');
     const totalApostasSpan = document.getElementById('totalApostasCount');
     const totalPremioLiquidoSpan = document.getElementById('totalPremioLiquido');
@@ -583,6 +657,7 @@
     const importarBtn = document.getElementById('importarBtn');
     const fileInput = document.getElementById('fileInput');
     const backupBtn = document.getElementById('backupBtn');
+    const pdfBtn = document.getElementById('pdfBtn');
 
     function calcularFinanceiro() {
         const totalBruto = apostas.length * 10;
@@ -647,7 +722,6 @@
         renderizarApostas();
     }
 
-    // Verifica se já existe um palpite IDENTICO (Mesmo nome, mesmo placar para o Brasil e mesmo placar para o Haiti)
     function palpiteIdenticoExistente(nome, gb, gh) {
         return apostas.some(ap => 
             ap.nome.trim().toLowerCase() === nome.trim().toLowerCase() && 
@@ -701,14 +775,12 @@
             renderizarApostas();
             premiacaoOutput.innerHTML = "Aguardando resultado oficial...";
             mostrarToast("🗑️ Todas as apostas foram removidas.", '#4a6b5a');
-        } else if (apostas.length === 0) {
-            alert("Não há apostas para limpar.");
         }
     }
 
     function calcularGanhadores() {
         if (apostas.length === 0) {
-            premiacaoOutput.innerHTML = "❌ Nenhuma aposta registrada. Adicione apostas para calcular o prêmio.";
+            premiacaoOutput.innerHTML = "❌ Nenhuma aposta registrada.";
             return;
         }
         const brasilResult = parseInt(resultadoBrasilInput.value);
@@ -724,7 +796,7 @@
             premiacaoOutput.innerHTML = `
                 🥲 NENHUM GANHADOR para o placar ${brasilResult} x ${haitiResult}.<br>
                 💰 Prêmio acumulado total: R$ ${premioLiquido.toFixed(2).replace('.', ',')}<br>
-                ⚠️ Ninguém acertou o placar exato. O valor fica retido para a próxima rodada.
+                ⚠️ Ninguém acertou o placar exato. O valor acumula.
             `;
             return;
         }
@@ -747,7 +819,7 @@
 
     function exportarBackup() {
         if (apostas.length === 0) {
-            alert("Não há apostas para exportar. Adicione algumas apostas primeiro.");
+            alert("Não há apostas para exportar.");
             return;
         }
         let csvContent = "nome,gols_brasil,gols_haiti\n";
@@ -763,22 +835,46 @@
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.href = url;
-        
-        const data = new Date();
-        const timestamp = `${data.getFullYear()}-${(data.getMonth()+1).toString().padStart(2,'0')}-${data.getDate().toString().padStart(2,'0')}_${data.getHours().toString().padStart(2,'0')}h${data.getMinutes().toString().padStart(2,'0')}`;
-        link.setAttribute("download", `bolaobrasil_haiti_backup_${timestamp}.csv`);
+        link.setAttribute("download", `bolao_backup.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        
-        mostrarToast(`💾 Backup gerado com ${apostas.length} aposta(s)!`, '#2c5f8a');
+    }
+
+    // Tenta decodificar strings com acentuação ANSI/Windows-1252 comum do Excel brasileiro
+    function decodificarAcentos(texto) {
+        try {
+            return decodeURIComponent(escape(texto));
+        } catch (e) {
+            // Dicionário de fallback de caracteres comuns corrompidos no Excel ANSI lidos em UTF-8
+            let corrigido = texto;
+            const subs = {
+                'Ã¡': 'á', 'Ã©': 'é', 'Ã­': 'í', 'Ã³': 'ó', 'Ãº': 'ú',
+                'Ã ': 'Á', 'Ã‰': 'É', 'Ã ': 'Í', 'Ã“': 'Ó', 'Ãš': 'Ú',
+                'Ã£': 'ã', 'Ãµ': 'õ', 'Ã¢': 'â', 'Ãª': 'ê', 'Ã´': 'ô',
+                'Ãƒ': 'Ã', 'Ã•': 'Õ', 'Ã‡': 'Ç', 'Ã§': 'ç'
+            };
+            Object.keys(subs).forEach(key => {
+                corrigido = corrigido.split(key).join(subs[key]);
+            });
+            return corrigido;
+        }
     }
 
     function importarCSV(file) {
         const reader = new FileReader();
+        // Força a leitura inicial adequada para capturar os acentos do Excel brasileiro (ISO-8859-1 / Windows-1252)
+        reader.readAsText(file, 'ISO-8859-1'); 
+        
         reader.onload = function(e) {
-            const conteudo = e.target.result;
+            let conteudo = e.target.result;
+            
+            // Se o arquivo já estava em UTF-8 por algum motivo, trata redundância
+            if (conteudo.includes('Ã¡') || conteudo.includes('Ã§') || conteudo.includes('Ã£')) {
+                conteudo = decodificarAcentos(conteudo);
+            }
+
             const linhas = conteudo.split(/\r?\n/);
             if (linhas.length === 0) {
                 alert("Arquivo vazio.");
@@ -790,17 +886,10 @@
             let idAtual = nextId;
 
             for (let i = 0; i < linhas.length; i++) {
-                let linha = lines = linhas[i].trim();
+                let linha = linhas[i].trim();
                 if (linha === "") continue;
-                linha = linha.replace(/\r$/, '');
                 
-                let colunas = [];
-                if (linha.includes(';')) {
-                    colunas = linha.split(';');
-                } else {
-                    colunas = linha.split(',');
-                }
-                
+                let colunas = linha.includes(';') ? linha.split(';') : linha.split(',');
                 if (colunas.length < 3) continue;
                 
                 let nome = colunas[0].trim();
@@ -808,6 +897,7 @@
                     nome = nome.slice(1, -1).replace(/""/g, '"');
                 }
                 
+                // Pula linha de cabeçalho baseada em texto
                 if (i === 0 && isNaN(parseInt(colunas[1]))) {
                     continue; 
                 }
@@ -820,7 +910,6 @@
                     continue;
                 }
                 
-                // Só bloqueia se for o mesmo nome E mesmo placar
                 if (palpiteIdenticoExistente(nome, golsBrasil, golsHaiti)) {
                     ignoradas++;
                     continue;
@@ -831,7 +920,7 @@
                     nome: nome,
                     golsBrasil: golsBrasil,
                     golsHaiti: golsHaiti,
-                    valor: 10
+                    value: 10
                 });
                 importadas++;
             }
@@ -840,21 +929,61 @@
                 nextId = idAtual;
                 atualizarResumo();
                 renderizarApostas();
-                let msg = `✅ ${importadas} palpites importados com sucesso!`;
-                if (ignoradas > 0) msg += ` ⚠️ ${ignoradas} ignorados (linhas inválidas ou palpites idênticos).`;
-                mostrarToast(msg, '#2c5f8a');
+                mostrarToast(`✅ ${importadas} palpites importados com acentuação corrigida!`, '#2c5f8a');
             } else {
-                alert("Nenhuma aposta válida importada. Verifique se o arquivo salvo está no formato CSV (Separado por vírgulas ou ponto-e-vírgula).");
+                alert("Nenhum palpite novo ou válido foi encontrado no arquivo.");
             }
         };
-        reader.onerror = () => alert("Erro ao ler o arquivo.");
-        reader.readAsText(file, 'UTF-8');
+    }
+
+    function gerarPDF() {
+        if (apostas.length === 0) {
+            alert("Não há dados cadastrados para gerar um relatório em PDF.");
+            return;
+        }
+
+        const tableBody = document.getElementById('pdfTableBody');
+        const pdfTotalApostas = document.getElementById('pdfTotalApostas');
+        const pdfTotalPremio = document.getElementById('pdfTotalPremio');
+        
+        // Monta os dados dinamicamente no container oculto do PDF
+        tableBody.innerHTML = apostas.map((ap, index) => `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${escapeHtml(ap.nome)}</td>
+                <td>Brasil ${ap.golsBrasil} x ${ap.golsHaiti} Haiti</td>
+                <td>R$ 10,00</td>
+            </tr>
+        `).join('');
+
+        pdfTotalApostas.innerText = apostas.length;
+        const totalDinheiro = apostas.length * 10;
+        pdfTotalPremio.innerText = totalDinheiro.toFixed(2).replace('.', ',');
+
+        // Configurações do arquivo de saída PDF
+        const elementoAlvo = document.getElementById('pdfContentTemplate');
+        elementoAlvo.style.display = 'block'; // Ativa temporariamente para captura
+
+        const opcoesConfig = {
+            margin:       15,
+            filename:     `Relatorio_Bolao_Brasil_Haiti.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // Roda a biblioteca de conversão
+        html2pdf().set(opcoesConfig).from(elementoAlvo).save().then(() => {
+            elementoAlvo.style.display = 'none'; // Oculta novamente após a captura
+            mostrarToast("📄 PDF baixado com sucesso!", "#a93226");
+        }).catch(err => {
+            elementoAlvo.style.display = 'none';
+            alert("Erro ao criar PDF: " + err);
+        });
     }
 
     function salvarLocalStorage() {
-        try {
-            localStorage.setItem('bolaobrasilHaiti2026', JSON.stringify({ apostas, nextId }));
-        } catch(e) {}
+        try { localStorage.setItem('bolaobrasilHaiti2026', JSON.stringify({ apostas, nextId })); } catch(e) {}
     }
     function carregarLocalStorage() {
         const dados = localStorage.getItem('bolaobrasilHaiti2026');
@@ -876,6 +1005,7 @@
     calcularBtn.addEventListener('click', calcularGanhadores);
     importarBtn.addEventListener('click', () => fileInput.click());
     backupBtn.addEventListener('click', exportarBackup);
+    pdfBtn.addEventListener('click', gerarPDF);
     fileInput.addEventListener('change', (e) => {
         if (e.target.files.length > 0) {
             importarCSV(e.target.files[0]);
