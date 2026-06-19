@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Bolão Copa do Mundo 2026 | Brasil x Haiti | R$10 | Backup CSV</title>
+    <!-- Biblioteca para geração do PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
@@ -433,102 +434,163 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* CONTAINER OCULTO DO PDF COM DESIGN PROFISSIONAL EXCLUSIVO */
+        /* ==========================================================================
+           ESTRUTURA DE ALTA PERFORMANCE E DESIGN DO PDF EXCLUSIVO (NÃO EXIBIDO EM TELA)
+           ========================================================================== */
         #pdfContentTemplate {
             display: none;
-            padding: 25px;
-            background: #fcfbf7;
-            color: #333;
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #222222;
+            padding: 0;
+            margin: 0;
         }
-        .pdf-header {
-            background: linear-gradient(135deg, #0a2f1f 0%, #061a10 100%);
-            border-radius: 1.5rem;
+
+        .pdf-wrapper {
             padding: 20px;
-            text-align: center;
-            color: white;
-            border: 2px solid #d4af37;
-            margin-bottom: 25px;
         }
-        .pdf-title {
-            font-size: 20px;
+
+        /* Cabeçalho Minimalista e Corporativo */
+        .pdf-header-container {
+            border-bottom: 2px solid #0d4f34;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .pdf-meta-left {
+            flex: 1;
+        }
+
+        .pdf-doc-title {
+            font-size: 22px;
             font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 5px;
-            color: #ffd966;
+            color: #0d4f34;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
         }
-        .pdf-subtitle {
+
+        .pdf-doc-subtitle {
             font-size: 11px;
+            color: #555555;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.9;
-            margin-bottom: 15px;
-        }
-        .pdf-teams {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 25px;
-        }
-        .pdf-team {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .pdf-flag {
-            width: 45px;
-            height: 33px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 1.5px solid #ffd966;
-        }
-        .pdf-team-name {
-            font-size: 14px;
-            font-weight: 700;
             letter-spacing: 1px;
         }
-        .pdf-vs {
-            font-size: 14px;
-            font-weight: 800;
-            background: #ffd966;
-            color: #0a2f1f;
-            padding: 2px 10px;
-            border-radius: 20px;
+
+        .pdf-meta-right {
+            text-align: right;
+            font-size: 10px;
+            color: #666666;
+            line-height: 1.4;
         }
-        .pdf-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .pdf-table th {
-            background-color: #0a2f1f;
-            color: #ffd966;
-            padding: 10px 12px;
-            text-align: left;
-            font-size: 12px;
-            text-transform: uppercase;
-            border-bottom: 3px solid #d4af37;
-        }
-        .pdf-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid #e1dbcd;
-            font-size: 12px;
-            font-weight: 600;
-            color: #222;
-        }
-        .pdf-table tr:nth-child(even) {
-            background-color: #f5f1e6;
-        }
-        .pdf-summary-box {
-            background: #f1e7d3;
-            padding: 15px 20px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #0a2f1f;
-            border: 1px solid #d4af37;
+
+        /* Placa do Confronto no PDF */
+        .pdf-match-bar {
+            background: #f4f7f5;
+            border: 1px solid #dcdfdc;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        .pdf-match-teams {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #111111;
+        }
+
+        .pdf-match-vs {
+            font-size: 11px;
+            background: #0d4f34;
+            color: #ffd966;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 800;
+        }
+
+        .pdf-match-value {
+            font-size: 11px;
+            font-weight: 700;
+            color: #0d4f34;
+            background: #e2ede8;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        /* Tabela Limpa de Dados */
+        .pdf-main-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .pdf-main-table th {
+            background-color: #0d4f34;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 8px 10px;
+            text-align: left;
+            border: 1px solid #0d4f34;
+        }
+
+        .pdf-main-table td {
+            font-size: 11px;
+            padding: 7px 10px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #333333;
+        }
+
+        .pdf-main-table tr:nth-child(even) td {
+            background-color: #f9fbf9;
+        }
+
+        .pdf-col-num { width: 8%; font-weight: 700; color: #777; }
+        .pdf-col-nome { width: 52%; font-weight: 700; text-transform: uppercase; color: #111; }
+        .pdf-col-palpite { width: 25%; font-weight: 700; font-family: monospace; font-size: 12px !important; color: #0d4f34; }
+        .pdf-col-status { width: 15%; font-size: 10px !important; font-weight: 600; text-align: right; color: #2e7d32; }
+
+        /* Rodapé de Consolidação / Resumo */
+        .pdf-footer-summary {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 15px;
+            page-break-inside: avoid;
+        }
+
+        .pdf-summary-card {
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 8px 15px;
+            text-align: right;
+            min-width: 140px;
+        }
+
+        .pdf-summary-label {
+            font-size: 9px;
+            color: #666666;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .pdf-summary-val {
+            font-size: 15px;
+            font-weight: 800;
+            color: #0d4f34;
         }
 
         @keyframes fadeOut {
@@ -643,40 +705,52 @@
     </footer>
 </div>
 
+<!-- TEMPLATE REESTRUTURADO DO PDF: VISUAL ULTRA-LIMPO E PROFISSIONAL -->
 <div id="pdfContentTemplate">
-    <div class="pdf-header">
-        <div class="pdf-title">RELATÓRIO OFICIAL DE PALPITES</div>
-        <div class="pdf-subtitle">Copa do Mundo FIFA 2026™ — Rodada de Grupos</div>
-        <div class="pdf-teams">
-            <div class="pdf-team">
-                <img class="pdf-flag" src="https://flagcdn.com/w160/br.png" alt="Brasil">
-                <span class="pdf-team-name">BRASIL</span>
+    <div class="pdf-wrapper">
+        <div class="pdf-header-container">
+            <div class="pdf-meta-left">
+                <div class="pdf-doc-title">Relatório de Palpites</div>
+                <div class="pdf-doc-subtitle">Bolão Copa do Mundo 2026™</div>
             </div>
-            <div class="pdf-vs">VS</div>
-            <div class="pdf-team">
-                <img class="pdf-flag" src="https://flagcdn.com/w160/ht.png" alt="Haiti">
-                <span class="pdf-team-name">HAITI</span>
+            <div class="pdf-meta-right">
+                <div>Documento Gerado Automaticamente</div>
+                <div id="pdfDataGeracao">Data: --/--/----</div>
             </div>
         </div>
-    </div>
-    <table class="pdf-table">
-        <thead>
-            <tr>
-                <th style="width: 8%;">Nº</th>
-                <th style="width: 52%;">Nome do Apostador</th>
-                <th style="width: 25%;">Palpite Exato</th>
-                <th style="width: 15%;">Status</th>
-            </tr>
-        </thead>
-        <tbody id="pdfTableBody">
+
+        <div class="pdf-match-bar">
+            <div class="pdf-match-teams">
+                <span>⚽ BRASIL</span>
+                <span class="pdf-match-vs">VS</span>
+                <span>HAITI ⚽</span>
+            </div>
+            <div class="pdf-match-value">Custo: R$ 10,00 por palpite</div>
+        </div>
+
+        <table class="pdf-main-table">
+            <thead>
+                <tr>
+                    <th class="pdf-col-num">Nº</th>
+                    <th class="pdf-col-nome">Apostador</th>
+                    <th class="pdf-col-palpite">Palpite</th>
+                    <th class="pdf-col-status" style="text-align: right;">Situação</th>
+                </tr>
+            </thead>
+            <tbody id="pdfTableBody">
+                <!-- Conteúdo ordenado injetado via JS -->
             </tbody>
-    </table>
-    <div class="pdf-summary-box">
-        <div>
-            Total de Palpites: <strong id="pdfTotalApostas">0</strong>
-        </div>
-        <div>
-            Fundo Acumulado: <strong style="color: #0a2f1f; font-size: 15px;">R$ <span id="pdfTotalPremio">0,00</span></strong>
+        </table>
+
+        <div class="pdf-footer-summary">
+            <div class="pdf-summary-card">
+                <div class="pdf-summary-label">Total de Palpites</div>
+                <div class="pdf-summary-val" id="pdfTotalApostas">0</div>
+            </div>
+            <div class="pdf-summary-card">
+                <div class="pdf-summary-label">Total Arrecadado</div>
+                <div class="pdf-summary-val" style="color: #0d4f34;">R$ <span id="pdfTotalPremio">0,00</span></div>
+            </div>
         </div>
     </div>
 </div>
@@ -711,7 +785,7 @@
     function mostrarToast(mensagem, cor = '#2c3e2f') {
         const toast = document.createElement('div');
         toast.className = 'toast-msg';
-        toast.textContent = mensagem;
+        toast.textContent = mensaje || mensagem;
         toast.style.background = cor;
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
@@ -892,7 +966,7 @@
             let corrigido = texto;
             const subs = {
                 'Ãá': 'á', 'Ã©': 'é', 'Ã­': 'í', 'Ã³': 'ó', 'Ãº': 'ú',
-                'Ã ': 'Á', 'Ã‰': 'É', 'Ã ': 'Í', 'Ã“': 'Ó', 'Ãš': 'Ú',
+                'Ã ': 'Á', 'Ã‰': 'É', 'Ã ': 'Í', 'Ã Hop': 'Ó', 'Ãš': 'Ú',
                 'Ãª': 'ã', 'Ãµ': 'õ', 'Ã¢': 'â', 'Ãª': 'ê', 'Ã´': 'ô',
                 'Ãƒ': 'Ã', 'Ã•': 'Õ', 'Ã‡': 'Ç', 'Ã§': 'ç'
             };
@@ -983,22 +1057,29 @@
         const tableBody = document.getElementById('pdfTableBody');
         const pdfTotalApostas = document.getElementById('pdfTotalApostas');
         const pdfTotalPremio = document.getElementById('pdfTotalPremio');
+        const pdfDataGeracao = document.getElementById('pdfDataGeracao');
         
-        // Clona e ordena os dados em ordem alfabética (A-Z) apenas para a exibição no PDF
+        // Define a data atual formatada no cabeçalho do PDF
+        const hoje = new Date();
+        const dataFormatada = hoje.toLocaleDateString('pt-BR') + ' às ' + hoje.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+        pdfDataGeracao.innerText = `Gerado em: ${dataFormatada}`;
+
+        // Ordenação alfabética impecável (A-Z) para o PDF
         const apostasOrdenadas = [...apostas].sort((a, b) => {
             return a.nome.localeCompare(b.nome, 'pt', { sensitivity: 'base' });
         });
 
-        // Alimenta a tabela com a lista ordenada alfabeticamente
+        // Monta as linhas da tabela
         tableBody.innerHTML = apostasOrdenadas.map((ap, index) => `
             <tr>
-                <td>${index + 1}</td>
-                <td>${escapeHtml(ap.nome.toUpperCase())}</td>
-                <td>🇧🇷 ${ap.golsBrasil} x ${ap.golsHaiti} 🇭🇹</td>
-                <td style="color:#2c5238;">PAGO (R$10)</td>
+                <td class="pdf-col-num">${index + 1}</td>
+                <td class="pdf-col-nome">${escapeHtml(ap.nome)}</td>
+                <td class="pdf-col-palpite">${ap.golsBrasil} x ${ap.golsHaiti}</td>
+                <td class="pdf-col-status" style="text-align: right;">PAGO</td>
             </tr>
         `).join('');
 
+        // Atualiza os contadores finais do PDF
         pdfTotalApostas.innerText = apostas.length;
         const totalDinheiro = apostas.length * 10;
         pdfTotalPremio.innerText = totalDinheiro.toFixed(2).replace('.', ',');
@@ -1006,17 +1087,18 @@
         const elementoAlvo = document.getElementById('pdfContentTemplate');
         elementoAlvo.style.display = 'block'; 
 
+        // Configurações otimizadas para evitar que pareça um print de página web
         const opcoesConfig = {
-            margin:       [12, 12, 12, 12],
-            filename:     `Relatorio_Oficial_Bolao_2026.pdf`,
-            image:        { type: 'jpeg', quality: 1.0 },
-            html2canvas:  { scale: 3, useCORS: true, logging: false },
+            margin:       [15, 15, 15, 15],
+            filename:     `Relatorio_Palpites_Bolao_2026.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false, letterRendering: true },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().set(opcoesConfig).from(elementoAlvo).save().then(() => {
             elementoAlvo.style.display = 'none'; 
-            mostrarToast("📄 PDF em ordem alfabética baixado!", "#a93226");
+            mostrarToast("📄 PDF estruturado e limpo baixado!", "#a93226");
         }).catch(err => {
             elementoAlvo.style.display = 'none';
             alert("Erro ao criar PDF: " + err);
