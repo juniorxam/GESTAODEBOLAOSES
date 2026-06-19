@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Bolão Copa do Mundo 2026 | Brasil x Haiti | R$10 | Backup CSV</title>
+    <!-- Biblioteca para geração do PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
@@ -408,28 +409,6 @@
             font-style: italic;
         }
 
-        .worldcup-gallery {
-            display: flex;
-            justify-content: center;
-            gap: 1.2rem;
-            margin-top: 1.2rem;
-            flex-wrap: wrap;
-        }
-
-        .worldcup-img {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 20px;
-            border: 2px solid #ffd966;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            transition: transform 0.2s;
-        }
-
-        .worldcup-img:hover {
-            transform: scale(1.05);
-        }
-
         footer {
             margin-top: 2rem;
             text-align: center;
@@ -455,53 +434,102 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        /* Estilos específicos para o PDF impresso e limpo */
+        /* CONTAINER OCULTO DO PDF COM DESIGN PROFISSIONAL EXCLUSIVO */
         #pdfContentTemplate {
             display: none;
-            padding: 30px;
-            background: white;
+            padding: 25px;
+            background: #fcfbf7;
             color: #333;
         }
-        .pdf-title {
+        .pdf-header {
+            background: linear-gradient(135deg, #0a2f1f 0%, #061a10 100%);
+            border-radius: 1.5rem;
+            padding: 20px;
             text-align: center;
-            color: #0a2f1f;
-            font-size: 24px;
-            font-weight: bold;
+            color: white;
+            border: 2px solid #d4af37;
+            margin-bottom: 25px;
+        }
+        .pdf-title {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 1px;
             margin-bottom: 5px;
+            color: #ffd966;
         }
         .pdf-subtitle {
-            text-align: center;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        .pdf-teams {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+        }
+        .pdf-team {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pdf-flag {
+            width: 45px;
+            height: 33px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1.5px solid #ffd966;
+        }
+        .pdf-team-name {
             font-size: 14px;
-            color: #666;
-            margin-bottom: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .pdf-vs {
+            font-size: 14px;
+            font-weight: 800;
+            background: #ffd966;
+            color: #0a2f1f;
+            padding: 2px 10px;
+            border-radius: 20px;
         }
         .pdf-table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .pdf-table th {
             background-color: #0a2f1f;
-            color: white;
-            padding: 10px;
+            color: #ffd966;
+            padding: 10px 12px;
             text-align: left;
-            font-size: 14px;
+            font-size: 12px;
+            text-transform: uppercase;
+            border-bottom: 3px solid #d4af37;
         }
         .pdf-table td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            font-size: 13px;
+            padding: 10px 12px;
+            border-bottom: 1px solid #e1dbcd;
+            font-size: 12px;
+            font-weight: 600;
+            color: #222;
         }
         .pdf-table tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #f5f1e6;
         }
-        .pdf-summary {
-            background-color: #f1e7d3;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 14px;
-            color: #1e3a2f;
+        .pdf-summary-box {
+            background: #f1e7d3;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #0a2f1f;
             border: 1px solid #d4af37;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         @keyframes fadeOut {
@@ -541,12 +569,12 @@
         <div class="match-title">🇺🇸🇨🇦🇲🇽 COPA DO MUNDO FIFA 2026™ • FASE DE GRUPOS 🇺🇸🇨🇦🇲🇽</div>
         <div class="teams">
             <div class="team">
-                <img class="team-flag-img" src="https://flagcdn.com/w160/br.png" alt="Bandeira do Brasil" onerror="this.src='https://cdn.countryflags.com/thumbs/brazil/flag-400.png'">
+                <img class="team-flag-img" src="https://flagcdn.com/w160/br.png" alt="Bandeira do Brasil">
                 <div class="team-name">BRASIL</div>
             </div>
             <div class="vs">VS</div>
             <div class="team">
-                <img class="team-flag-img" src="https://flagcdn.com/w160/ht.png" alt="Bandeira do Haiti" onerror="this.src='https://cdn.countryflags.com/thumbs/haiti/flag-400.png'">
+                <img class="team-flag-img" src="https://flagcdn.com/w160/ht.png" alt="Bandeira do Haiti">
                 <div class="team-name">HAITI</div>
             </div>
         </div>
@@ -559,7 +587,7 @@
             <form id="apostaForm">
                 <div class="form-group">
                     <label>👤 Nome do apostador</label>
-                    <input type="text" id="apostadorNome" placeholder="Ex: Carlos Alberto" required autocomplete="off">
+                    <input type="text" id="apostadorNome" placeholder="EX: CARLOS ALBERTO" required autocomplete="off" style="text-transform: uppercase;">
                 </div>
                 <div class="score-inputs">
                     <div>
@@ -616,25 +644,43 @@
     </footer>
 </div>
 
+<!-- TEMPLATE DO PDF PROFISSIONAL COM IMAGENS E CABEÇALHO INTEGRADO -->
 <div id="pdfContentTemplate">
-    <div class="pdf-title">RELATÓRIO OFICIAL DO BOLÃO</div>
-    <div class="pdf-subtitle">Copa do Mundo 2026 | Brasil x Haiti — Valor por Palpite: R$ 10,00</div>
+    <div class="pdf-header">
+        <div class="pdf-title">RELATÓRIO OFICIAL DE PALPITES</div>
+        <div class="pdf-subtitle">Copa do Mundo FIFA 2026™ — Rodada de Grupos</div>
+        <div class="pdf-teams">
+            <div class="pdf-team">
+                <img class="pdf-flag" src="https://flagcdn.com/w160/br.png" alt="Brasil">
+                <span class="pdf-team-name">BRASIL</span>
+            </div>
+            <div class="pdf-vs">VS</div>
+            <div class="pdf-team">
+                <img class="pdf-flag" src="https://flagcdn.com/w160/ht.png" alt="Haiti">
+                <span class="pdf-team-name">HAITI</span>
+            </div>
+        </div>
+    </div>
     <table class="pdf-table">
         <thead>
             <tr>
-                <th>Nº</th>
-                <th>Apostador</th>
-                <th>Palpite Exato</th>
-                <th>Valor Pago</th>
+                <th style="width: 8%;">Nº</th>
+                <th style="width: 52%;">Nome do Apostador</th>
+                <th style="width: 25%;">Palpite Exato</th>
+                <th style="width: 15%;">Status</th>
             </tr>
         </thead>
         <tbody id="pdfTableBody">
-            </tbody>
+            <!-- Inserido dinamicamente -->
+        </tbody>
     </table>
-    <div class="pdf-summary">
-        <strong>Resumo Financeiro Consolidado:</strong><br>
-        • Total de Palpites Registrados: <span id="pdfTotalApostas">0</span><br>
-        • Fundo Total de Premiação Acumulado: <strong>R$ <span id="pdfTotalPremio">0,00</span></strong>
+    <div class="pdf-summary-box">
+        <div>
+            Total de Palpites: <strong id="pdfTotalApostas">0</strong>
+        </div>
+        <div>
+            Fundo Acumulado: <strong style="color: #0a2f1f; font-size: 15px;">R$ <span id="pdfTotalPremio">0,00</span></strong>
+        </div>
     </div>
 </div>
 
@@ -724,7 +770,7 @@
 
     function palpiteIdenticoExistente(nome, gb, gh) {
         return apostas.some(ap => 
-            ap.nome.trim().toLowerCase() === nome.trim().toLowerCase() && 
+            ap.nome.trim().toUpperCase() === nome.trim().toUpperCase() && 
             ap.golsBrasil === gb && 
             ap.golsHaiti === gh
         );
@@ -732,7 +778,8 @@
 
     function adicionarAposta(event) {
         event.preventDefault();
-        let nome = nomeInput.value.trim();
+        // Garante que o nome inserido manualmente fique em maiúsculo
+        let nome = nomeInput.value.trim().toUpperCase();
         if (nome === "") {
             alert("Informe o nome do apostador.");
             return;
@@ -842,17 +889,15 @@
         URL.revokeObjectURL(url);
     }
 
-    // Tenta decodificar strings com acentuação ANSI/Windows-1252 comum do Excel brasileiro
     function decodificarAcentos(texto) {
         try {
             return decodeURIComponent(escape(texto));
         } catch (e) {
-            // Dicionário de fallback de caracteres comuns corrompidos no Excel ANSI lidos em UTF-8
             let corrigido = texto;
             const subs = {
-                'Ã¡': 'á', 'Ã©': 'é', 'Ã­': 'í', 'Ã³': 'ó', 'Ãº': 'ú',
+                'Ãá': 'á', 'Ã©': 'é', 'Ã­': 'í', 'Ã³': 'ó', 'Ãº': 'ú',
                 'Ã ': 'Á', 'Ã‰': 'É', 'Ã ': 'Í', 'Ã“': 'Ó', 'Ãš': 'Ú',
-                'Ã£': 'ã', 'Ãµ': 'õ', 'Ã¢': 'â', 'Ãª': 'ê', 'Ã´': 'ô',
+                'Ãª': 'ã', 'Ãµ': 'õ', 'Ã¢': 'â', 'Ãª': 'ê', 'Ã´': 'ô',
                 'Ãƒ': 'Ã', 'Ã•': 'Õ', 'Ã‡': 'Ç', 'Ã§': 'ç'
             };
             Object.keys(subs).forEach(key => {
@@ -864,13 +909,11 @@
 
     function importarCSV(file) {
         const reader = new FileReader();
-        // Força a leitura inicial adequada para capturar os acentos do Excel brasileiro (ISO-8859-1 / Windows-1252)
         reader.readAsText(file, 'ISO-8859-1'); 
         
         reader.onload = function(e) {
             let conteudo = e.target.result;
             
-            // Se o arquivo já estava em UTF-8 por algum motivo, trata redundância
             if (conteudo.includes('Ã¡') || conteudo.includes('Ã§') || conteudo.includes('Ã£')) {
                 conteudo = decodificarAcentos(conteudo);
             }
@@ -892,12 +935,12 @@
                 let colunas = linha.includes(';') ? linha.split(';') : linha.split(',');
                 if (colunas.length < 3) continue;
                 
-                let nome = colunas[0].trim();
+                // Força o nome vindo do CSV a ficar em maiúsculo também
+                let nome = colunas[0].trim().toUpperCase();
                 if (nome.startsWith('"') && nome.endsWith('"')) {
                     nome = nome.slice(1, -1).replace(/""/g, '"');
                 }
                 
-                // Pula linha de cabeçalho baseada em texto
                 if (i === 0 && isNaN(parseInt(colunas[1]))) {
                     continue; 
                 }
@@ -929,7 +972,7 @@
                 nextId = idAtual;
                 atualizarResumo();
                 renderizarApostas();
-                mostrarToast(`✅ ${importadas} palpites importados com acentuação corrigida!`, '#2c5f8a');
+                mostrarToast(`✅ ${importadas} palpites importados e convertidos para maiúsculo!`, '#2c5f8a');
             } else {
                 alert("Nenhum palpite novo ou válido foi encontrado no arquivo.");
             }
@@ -946,13 +989,13 @@
         const pdfTotalApostas = document.getElementById('pdfTotalApostas');
         const pdfTotalPremio = document.getElementById('pdfTotalPremio');
         
-        // Monta os dados dinamicamente no container oculto do PDF
+        // Alimenta a tabela dinâmica limpando dados e assegurando nomes maiúsculos
         tableBody.innerHTML = apostas.map((ap, index) => `
             <tr>
                 <td>${index + 1}</td>
-                <td>${escapeHtml(ap.nome)}</td>
-                <td>Brasil ${ap.golsBrasil} x ${ap.golsHaiti} Haiti</td>
-                <td>R$ 10,00</td>
+                <td>${escapeHtml(ap.nome.toUpperCase())}</td>
+                <td>🇧🇷 ${ap.golsBrasil} x ${ap.golsHaiti} 🇭🇹</td>
+                <td style="color:#2c5238;">PAGO (R$10)</td>
             </tr>
         `).join('');
 
@@ -960,22 +1003,20 @@
         const totalDinheiro = apostas.length * 10;
         pdfTotalPremio.innerText = totalDinheiro.toFixed(2).replace('.', ',');
 
-        // Configurações do arquivo de saída PDF
         const elementoAlvo = document.getElementById('pdfContentTemplate');
-        elementoAlvo.style.display = 'block'; // Ativa temporariamente para captura
+        elementoAlvo.style.display = 'block'; 
 
         const opcoesConfig = {
-            margin:       15,
-            filename:     `Relatorio_Bolao_Brasil_Haiti.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
+            margin:       [12, 12, 12, 12],
+            filename:     `Relatorio_Oficial_Bolao_2026.pdf`,
+            image:        { type: 'jpeg', quality: 1.0 },
+            html2canvas:  { scale: 3, useCORS: true, logging: false },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        // Roda a biblioteca de conversão
         html2pdf().set(opcoesConfig).from(elementoAlvo).save().then(() => {
-            elementoAlvo.style.display = 'none'; // Oculta novamente após a captura
-            mostrarToast("📄 PDF baixado com sucesso!", "#a93226");
+            elementoAlvo.style.display = 'none'; 
+            mostrarToast("📄 PDF Profissional baixado!", "#a93226");
         }).catch(err => {
             elementoAlvo.style.display = 'none';
             alert("Erro ao criar PDF: " + err);
@@ -991,7 +1032,8 @@
             try {
                 const parsed = JSON.parse(dados);
                 if (parsed.apostas && Array.isArray(parsed.apostas)) {
-                    apostas = parsed.apostas;
+                    // Mapeia garantindo caixa alta em carregamentos legados
+                    apostas = parsed.apostas.map(a => ({...a, nome: a.nome.toUpperCase()}));
                     nextId = parsed.nextId || (apostas.length ? Math.max(...apostas.map(a=>a.id),0)+1 : 1);
                     atualizarResumo();
                     renderizarApostas();
