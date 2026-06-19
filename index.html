@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Bolão Copa do Mundo 2026 | Brasil x Haiti | R$10 | Backup CSV</title>
-    <!-- Biblioteca para geração do PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * {
@@ -644,7 +643,6 @@
     </footer>
 </div>
 
-<!-- TEMPLATE DO PDF PROFISSIONAL COM IMAGENS E CABEÇALHO INTEGRADO -->
 <div id="pdfContentTemplate">
     <div class="pdf-header">
         <div class="pdf-title">RELATÓRIO OFICIAL DE PALPITES</div>
@@ -671,8 +669,7 @@
             </tr>
         </thead>
         <tbody id="pdfTableBody">
-            <!-- Inserido dinamicamente -->
-        </tbody>
+            </tbody>
     </table>
     <div class="pdf-summary-box">
         <div>
@@ -778,7 +775,6 @@
 
     function adicionarAposta(event) {
         event.preventDefault();
-        // Garante que o nome inserido manualmente fique em maiúsculo
         let nome = nomeInput.value.trim().toUpperCase();
         if (nome === "") {
             alert("Informe o nome do apostador.");
@@ -935,7 +931,6 @@
                 let colunas = linha.includes(';') ? linha.split(';') : linha.split(',');
                 if (colunas.length < 3) continue;
                 
-                // Força o nome vindo do CSV a ficar em maiúsculo também
                 let nome = colunas[0].trim().toUpperCase();
                 if (nome.startsWith('"') && nome.endsWith('"')) {
                     nome = nome.slice(1, -1).replace(/""/g, '"');
@@ -972,7 +967,7 @@
                 nextId = idAtual;
                 atualizarResumo();
                 renderizarApostas();
-                mostrarToast(`✅ ${importadas} palpites importados e convertidos para maiúsculo!`, '#2c5f8a');
+                mostrarToast(`✅ ${importadas} palpites importados com sucesso!`, '#2c5f8a');
             } else {
                 alert("Nenhum palpite novo ou válido foi encontrado no arquivo.");
             }
@@ -989,8 +984,13 @@
         const pdfTotalApostas = document.getElementById('pdfTotalApostas');
         const pdfTotalPremio = document.getElementById('pdfTotalPremio');
         
-        // Alimenta a tabela dinâmica limpando dados e assegurando nomes maiúsculos
-        tableBody.innerHTML = apostas.map((ap, index) => `
+        // Clona e ordena os dados em ordem alfabética (A-Z) apenas para a exibição no PDF
+        const apostasOrdenadas = [...apostas].sort((a, b) => {
+            return a.nome.localeCompare(b.nome, 'pt', { sensitivity: 'base' });
+        });
+
+        // Alimenta a tabela com a lista ordenada alfabeticamente
+        tableBody.innerHTML = apostasOrdenadas.map((ap, index) => `
             <tr>
                 <td>${index + 1}</td>
                 <td>${escapeHtml(ap.nome.toUpperCase())}</td>
@@ -1016,7 +1016,7 @@
 
         html2pdf().set(opcoesConfig).from(elementoAlvo).save().then(() => {
             elementoAlvo.style.display = 'none'; 
-            mostrarToast("📄 PDF Profissional baixado!", "#a93226");
+            mostrarToast("📄 PDF em ordem alfabética baixado!", "#a93226");
         }).catch(err => {
             elementoAlvo.style.display = 'none';
             alert("Erro ao criar PDF: " + err);
@@ -1032,7 +1032,6 @@
             try {
                 const parsed = JSON.parse(dados);
                 if (parsed.apostas && Array.isArray(parsed.apostas)) {
-                    // Mapeia garantindo caixa alta em carregamentos legados
                     apostas = parsed.apostas.map(a => ({...a, nome: a.nome.toUpperCase()}));
                     nextId = parsed.nextId || (apostas.length ? Math.max(...apostas.map(a=>a.id),0)+1 : 1);
                     atualizarResumo();
