@@ -778,32 +778,37 @@
                 alert("Arquivo vazio.");
                 return;
             }
-            let primeiraLinha = linhas[0];
-            if (primeiraLinha.charCodeAt(0) === 0xFEFF) {
-                primeiraLinha = primeiraLinha.substring(1);
-            }
-            const cabecalho = primeiraLinha.split(',').map(c => c.trim().toLowerCase());
-            if (cabecalho[0] !== 'nome' || cabecalho[1] !== 'gols_brasil' || cabecalho[2] !== 'gols_haiti') {
-                alert("Formato inválido. Use cabeçalho: nome, gols_brasil, gols_haiti");
-                return;
-            }
 
             let importadas = 0;
             let ignoradas = 0;
             let duplicadas = [];
             let idAtual = nextId;
 
-            for (let i = 1; i < linhas.length; i++) {
+            for (let i = 0; i < linhas.length; i++) {
                 let linha = linhas[i].trim();
                 if (linha === "") continue;
                 linha = linha.replace(/\r$/, '');
-                const colunas = linha.split(',').map(c => c.trim());
+                
+                // Suporta separação por vírgula ou ponto-e-vírgula
+                let colunas = [];
+                if (linha.includes(';')) {
+                    colunas = linha.split(';').map(c => c.trim());
+                } else {
+                    colunas = linha.split(',').map(c => c.trim());
+                }
+                
                 if (colunas.length < 3) continue;
                 
                 let nome = colunas[0];
                 if (nome.startsWith('"') && nome.endsWith('"')) {
                     nome = nome.slice(1, -1).replace(/""/g, '"');
                 }
+                
+                // Se for a linha de cabeçalho com texto puro (ex: "nome", "gols do brasil"), pula automaticamente
+                if (i === 0 && isNaN(parseInt(colunas[1]))) {
+                    continue; 
+                }
+
                 const golsBrasil = parseInt(colunas[1]);
                 const golsHaiti = parseInt(colunas[2]);
                 
@@ -833,10 +838,10 @@
                 atualizarResumo();
                 renderizarApostas();
                 let msg = `✅ ${importadas} apostas importadas com sucesso!`;
-                if (ignoradas > 0) msg += ` ⚠️ ${ignoradas} ignoradas (inválidas ou duplicadas).`;
+                if (ignoradas > 0) msg += ` ⚠️ ${ignoradas} ignoradas (linhas inválidas ou nomes duplicados).`;
                 mostrarToast(msg, '#2c5f8a');
             } else {
-                alert(`Nenhuma aposta válida importada. Verifique o formato CSV.\nDuplicados: ${duplicadas.length}`);
+                alert("Nenhuma aposta válida importada. Verifique se o arquivo salvo está no formato CSV (Separado por vírgulas ou ponto-e-vírgula).");
             }
         };
         reader.onerror = () => alert("Erro ao ler o arquivo.");
